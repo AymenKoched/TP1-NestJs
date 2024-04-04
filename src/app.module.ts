@@ -1,12 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CvController } from './cv/cv.controller';
-import { CvService } from './cv/cv.service';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
-import { SkillController } from './skill/skill.controller';
-import { SkillService } from './skill/skill.service';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {ConfigModule} from "@nestjs/config";
 import { SkillModule } from './skill/skill.module';
@@ -34,11 +28,11 @@ import * as process from 'process';
         trustServerCertificate: true,
       }
     }),
-    SkillModule,
     CvModule,
+    SkillModule,
     UserModule,
   ],
-  controllers: [AppController, CvController, UserController, SkillController],
-  providers: [AppService, CvService, UserService, SkillService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -7,39 +7,46 @@ import { UpdateSkillDto } from './dto/update-skill.dto';
 
 @Injectable()
 export class SkillService {
-constructor(@InjectRepository(SkillEntity)
-  private skillRepository : Repository<SkillEntity> ){}
+  constructor(
+    @InjectRepository(SkillEntity)
+    private readonly skillRepository: Repository<SkillEntity>
+  ){}
   
-  async create(newSkill: CreateSkillDto):Promise<SkillEntity> {
-    return await this.skillRepository.save(newSkill);;
-  }
-
   async findAll():Promise<SkillEntity[]> {
     return this.skillRepository.find();
   }
   
-  async findOne(id: string) :Promise<SkillEntity> {
-    const skill=await this.skillRepository.findOne({where: {id}});
+  async findOneById(id: string) :Promise<SkillEntity> {
+    const skill= await this.skillRepository.findOne({where: {id}});
     if (!skill){
       throw new NotFoundException(`le skill d'id ${id} n'existe pas` );
-   }
-   return skill;
-  }
-  async update(id: string, updatedskill:UpdateSkillDto): Promise<SkillEntity> {
-    const  newSkill = await this.skillRepository.preload({id,...updatedskill,});
-    if (newSkill) {
-      return this.skillRepository.save(newSkill);
-    } else {
-      throw new NotFoundException('skill innexistant');
     }
+    return skill;
+  }
+
+  async create(newSkill: CreateSkillDto):Promise<SkillEntity> {
+    return await this.skillRepository.save(newSkill);
+  }
+
+  async updateById(id: string, updatedSkill:UpdateSkillDto): Promise<SkillEntity> {
+    const oldSkill = await this.findOneById(id);
+
+    const  newSkill = await this.skillRepository.preload({id,...updatedSkill,});
+    return this.skillRepository.save(newSkill);
 }
  
-  async remove(id: string) {
-    const skillToDelete=await this.skillRepository.findOne({where:{id}});
-    if(!skillToDelete){
-        throw new NotFoundException("Le skill d'id ${id} n'existe pas");
-    }
+  async softRemoveById(id: string): Promise<SkillEntity> {
+    const oldSkill = await this.findOneById(id);
+    return await this.skillRepository.remove(oldSkill);
+  }
 
-        return await this.skillRepository.remove(skillToDelete);
-}
+  async restoreById (id: number) {
+    const skills = await this.skillRepository.query(`
+      SELECT *
+      FROM skill
+      WHERE skill.id = ${id}
+    `);
+    if (skills.length === 0) throw new NotFoundException();
+    return await this.skillRepository.restore(id);
+  }
 }

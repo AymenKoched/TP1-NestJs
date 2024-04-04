@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class UpdateSkillDto {
-    @IsString()
     @IsOptional()
+    @IsString()
     designation:string;
 }

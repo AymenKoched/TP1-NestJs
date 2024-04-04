@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min} from "class-validator";
+import {Type} from "class-transformer";
 
 export class CreateCvDto {
     @IsNotEmpty()
@@ -8,10 +9,13 @@ export class CreateCvDto {
     @IsNotEmpty()
     @IsString()
     firstname:string;
-    
+
     @IsNotEmpty()
+    @Type(() => Number )
     @IsNumber()
-    age:number;
+    @Min(15)
+    @Max(65)
+    age: number;
     
     @IsOptional()
     @IsString()
@@ -20,8 +24,9 @@ export class CreateCvDto {
     @IsNotEmpty()
     @IsString()
     job:string;
-    
+
     @IsNotEmpty()
+    @Type(() => Number )
     @IsNumber()
-    cin:number;
+    cin: number;
 }

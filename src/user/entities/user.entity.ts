@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { CvEntity } from "../../cv/entities/cv.entity";
 import { TimestampEntity } from 'src/generics/timestamp.entity/timestamp.entity';
+import {UserRoleEnum} from "../../enums/user-role.enum";
 
 @Entity('user')
 export class UserEntity extends TimestampEntity {
@@ -21,6 +22,11 @@ export class UserEntity extends TimestampEntity {
 
   @Column()
   salt: string;
+
+  @Column({
+    default: UserRoleEnum.USER
+  })
+  role: string;
 
   @OneToMany(
     (type) => CvEntity,
