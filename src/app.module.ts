@@ -16,7 +16,7 @@ import { UserModule } from './user/user.module';
 import * as process from 'process';
 
 @Module({
-  imports: [
+  imports: [CvModule,UserModule,SkillModule,
     ConfigModule.forRoot({
       envFilePath: './config/.env',
       isGlobal: true,

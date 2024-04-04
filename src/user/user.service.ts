@@ -1,4 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
+
 
 @Injectable()
-export class UserService {}
+export class UserService {
+constructor(@InjectRepository(UserEntity)
+  private userRepository : Repository<UserEntity> ){}
+  
+  async create(newUser: CreateUserDto):Promise<UserEntity> {
+    return await this.userRepository.save(newUser);;
+  }
+
+  async findAll():Promise<UserEntity[]> {
+    return await this.userRepository.find();
+  }
+  
+  async findOne(id: string) :Promise<UserEntity> {
+    const user=await this.userRepository.findOne({where: {id}});
+    if (!user){
+      throw new NotFoundException(`le user d'id ${id} n'existe pas` );
+   }
+   return user;
+  }
+
+  async update(id: string, updatedUser:UpdateUserDto): Promise<UserEntity> {
+    const  newUser = await this.userRepository.preload({id,...updatedUser,});
+    if (newUser) {
+      return this.userRepository.save(newUser);
+    } else {
+      throw new NotFoundException('user innexistant');
+    }
+}
+ 
+  async remove(id: string) {
+    const res = await this.userRepository.softDelete(id);
+      if (res){
+          return { message: 'user deleted' };
+      }
+      else {
+          throw new NotFoundException(`le user d'id ${id} n'existe pas` );
+      }
+  }
+}
