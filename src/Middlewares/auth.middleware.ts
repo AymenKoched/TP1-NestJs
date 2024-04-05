@@ -4,7 +4,7 @@ import { verify } from "jsonwebtoken";
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response , next: NextFunction) {
-    const token = Array.isArray(req.headers['auth-user']) ? req.headers['auth-user'][0] : req.headers['auth-user'];
+    const token = req.headers['auth-user'] as string ;
     next();
     if(token)
       {

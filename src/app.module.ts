@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import {TypeOrmModule} from "@nestjs/typeorm";
@@ -8,6 +8,7 @@ import { CvModule } from './cv/cv.module';
 import { UserModule } from './user/user.module';
 
 import * as process from 'process';
+import { AuthMiddleware } from './Middlewares/auth.middleware';
 
 @Module({
   imports: [CvModule,UserModule,SkillModule,
@@ -35,4 +36,9 @@ import * as process from 'process';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer : MiddlewareConsumer)
+  {
+    consumer.apply(AuthMiddleware).forRoutes('todo/:*');
+  }
+}
