@@ -8,12 +8,16 @@ import * as bcrypt from 'bcrypt';
 import {handle_error} from "../helpers/user.unique-username-email/user.unique-username-email";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {UserRoleEnum} from "../enums/user-role.enum";
+import {JwtService} from "@nestjs/jwt";
 
 
 @Injectable()
 export class UserService {
-constructor(@InjectRepository(UserEntity)
-  private userRepository : Repository<UserEntity> ){}
+constructor(
+  @InjectRepository(UserEntity)
+  private readonly userRepository : Repository<UserEntity>,
+  private readonly jwtService: JwtService,
+){}
 
   async signIn(newUser: SignInUserDto): Promise<Partial<UserEntity>> {
     const user = this.userRepository.create({
@@ -47,7 +51,7 @@ constructor(@InjectRepository(UserEntity)
     }
   }
 
-  async login(userCredentials: LoginUserDto) {
+  async login(userCredentials: LoginUserDto): Promise<{token: string}> {
     const {email, password} = userCredentials;
 
     const user = await this.userRepository.createQueryBuilder('user')
@@ -68,13 +72,11 @@ constructor(@InjectRepository(UserEntity)
       role: user.role,
     }
 
-    // const jwtToken = this.jwtService.sign(payload, {secret: process.env.JWT_SECRET});
+    const jwtToken = this.jwtService.sign(payload, {secret: process.env.JWT_SECRET});
 
-    // return {
-    //   'token': jwtToken
-    // };
-
-    return payload;
+    return {
+      'token': jwtToken
+    };
   }
 
   isOwnerOrAdmin(object, user) {
