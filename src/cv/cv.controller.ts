@@ -1,4 +1,4 @@
-import {Controller, Post, Get, Patch, Delete, Body, Param, Query, ParseIntPipe, UseGuards} from '@nestjs/common';
+import {Controller, Post, Get, Patch, Delete, Body, Param, Query, ParseIntPipe, UseGuards, UseInterceptors} from '@nestjs/common';
 import { CvService } from './cv.service';
 import { CreateCvDto } from './dto/create-cv.dto';
 import { CvEntity } from './entities/cv.entity';
@@ -8,6 +8,10 @@ import {PaginationDto} from "./dto/pagination-cv.dto";
 import {JwtAuthGuard} from "../user/guards/jwt-auth.guard";
 import {User} from "../decorators/user/user.decorator";
 import {UserEntity} from "../user/entities/user.entity";
+import { UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('cv')
 export class CvController {
@@ -82,5 +86,29 @@ export class CvController {
     @User() user: Partial<UserEntity>,
   ) {
     return this.cvService.restoreById(id, user);
+  }
+  @Post('upload/:id')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadFile(
+    @Param('id') id: string,
+    @UploadedFile() file,
+    @User() user: Partial<UserEntity>,
+  ): Promise<string> {
+    await this.cvService.updateFilePath(id, file.path , user);
+    return file.path;
   }
 }

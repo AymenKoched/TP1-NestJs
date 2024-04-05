@@ -87,4 +87,12 @@ export class CvService {
     if(user.role === UserRoleEnum.ADMIN || (cvs[0].userId === user.id)) return await this.cvRepo.restore(id);
     else throw new UnauthorizedException();
   }
+
+  async updateFilePath(id: string, Filepath: string  ,user: Partial<UserEntity>){
+    const cv = await this.findOneById(id, user);
+    if (!cv) throw new NotFoundException(`le cv d'id ${id} n'existe pas`);
+    cv.path = Filepath;
+    console.log('File added/updated successfully !')
+    await this.cvRepo.save(cv);
+  }
 }
