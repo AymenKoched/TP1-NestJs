@@ -6,9 +6,9 @@ import {
   PrimaryGeneratedColumn,
   JoinTable,
 } from 'typeorm';
-import { TimestampEntity } from 'src/generics/timestamp.entity/timestamp.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
 import {SkillEntity} from "../../skill/entities/skill.entity";
+import {TimestampEntity} from "../../generics/timestamp.entity/timestamp.entity";
+import {UserEntity} from "../../user/entities/user.entity";
 
 @Entity('cv')
 export class CvEntity extends TimestampEntity {

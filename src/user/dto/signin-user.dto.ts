@@ -14,4 +14,8 @@ export class SignInUserDto {
   @IsNotEmpty()
   @Trim()
   password: string;
+
+  @IsNotEmpty()
+  @Trim()
+  role: string;
 }

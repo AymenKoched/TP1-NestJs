@@ -2,9 +2,9 @@ import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
-import process from "process";
 import {SignInUserDto} from "./dto/signin-user.dto";
 import * as bcrypt from 'bcrypt';
+import * as process from "process";
 import {handle_error} from "../helpers/user.unique-username-email/user.unique-username-email";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {UserRoleEnum} from "../enums/user-role.enum";

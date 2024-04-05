@@ -7,7 +7,7 @@ import {
     randFirstName,
     randJobTitle,
     randLastName, randNumber,
-    randPassword,
+    randPassword, randRole,
     randSkill,
     randUserName
 } from "@ngneat/falso";
@@ -15,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { CvEntity } from '../cv/entities/cv.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { CvService } from "../cv/cv.service";
+import {SignInUserDto} from "../user/dto/signin-user.dto";
 
 async function bootstrap() {
     const app= await NestFactory.createApplicationContext(AppModule);
@@ -22,30 +23,25 @@ async function bootstrap() {
     const userServices = app.get(UserService);
     const skillService = app.get(SkillService);
     const skills = [];
+    // for (let i = 0; i < 10; i++) {
+    //     const skill = await skillService.create({designation: randSkill() });
+    //     skills.push(skill);
+    // }
     for (let i = 0; i < 10; i++) {
-        const skill= new SkillEntity()
-        skill.designation=randSkill();
-        await skillService.create(skill);
-        skills.push(skill);
-    }
-    for (let i = 0; i < 10; i++) {
-        const user = new UserEntity()
-        user.email=randEmail()
-        user.username=randUserName()
-        user.password=randPassword()
-        const cv=new CvEntity()
-        cv.firstname=randFirstName()
-        cv.name=randLastName()
-        cv.job=randJobTitle()
-        cv.age=i+18
-        cv.path=randFilePath()
-        cv.cin=randNumber()
-        cv.user=user
-        cv.cvSkills=[
-            skills[i],
-        ]
-        await userServices.signIn(user)
-        await cvService.create(cv,userServices)
+        const user = await userServices.signIn({
+            username: randUserName(),
+            email: randEmail(),
+            password: randPassword(),
+            role: randRole(),
+        });
+        const cv = await cvService.create({
+            name: randLastName(),
+            firstname: randFirstName(),
+            age: i + 18,
+            path: randFilePath(),
+            job: randJobTitle(),
+            cin: randNumber(),
+        },user);
     }
     await app.close();
 }
