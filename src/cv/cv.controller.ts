@@ -66,8 +66,8 @@ export class CvController {
   async update(
     @Param('id') id: string,
     @Body() updateCvDto : UpdateCvDto,
-  @User() user: Partial<UserEntity>,
-  ) : Promise<CvEntity> {
+    @User() user: Partial<UserEntity>,
+  )  {
       return this.cvService.updateById(id,updateCvDto, user);
   }
 

@@ -37,9 +37,6 @@ export class CvEntity extends TimestampEntity {
   })
   path: string;
 
-  
-
-  
   @ManyToOne(
     (type) => UserEntity,
     (user) => user.cvs,

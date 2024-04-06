@@ -74,11 +74,12 @@ export class CvService {
     return await this.cvRepo.save(cv);
   }
 
-  async updateById(id: string, updatedCv:UpdateCvDto, user: Partial<UserEntity>): Promise<CvEntity> {
+  async updateById(id: string, updatedCv:UpdateCvDto, user: Partial<UserEntity>) {
     const oldCv = await this.findOneById(id, user);
 
-    const  newCv = await this.cvRepo.preload({id,...updatedCv,});
-    return this.cvRepo.save(newCv);
+    const  newCv = await this.cvRepo.update({id},updatedCv );
+
+    return newCv;
   }
  
   async softRemoveById(id: string,  user: Partial<UserEntity>) :Promise<CvEntity> {
