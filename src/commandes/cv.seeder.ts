@@ -30,6 +30,11 @@ async function bootstrap() {
             password: randPassword(),
             role: randRole(),
         });
+
+        let skillIds = [];
+        skills.slice(0,i).map((skill) => {
+          skillIds.push(skill.id);
+        })
         const cv = await cvService.create({
             name: randLastName(),
             firstname: randFirstName(),
@@ -37,7 +42,7 @@ async function bootstrap() {
             path: randFilePath(),
             job: randJobTitle(),
             cin: randNumber(),
-        },user);
+        },user, skillIds);
     }
     await app.close();
 }

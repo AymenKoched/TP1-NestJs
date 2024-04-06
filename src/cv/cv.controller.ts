@@ -56,8 +56,10 @@ export class CvController {
   async create(
     @Body() CreateCvDto : CreateCvDto,
     @User() user: Partial<UserEntity>,
+    @Query('skillIds') skillIds: string,
   ) : Promise<CvEntity> {
-    return this.cvService.create(CreateCvDto, user);
+    const skillIdsArray = skillIds.split(',');
+    return this.cvService.create(CreateCvDto, user, skillIdsArray);
   }
 
   @Patch(':id')

@@ -5,11 +5,14 @@ import {UserModule} from "../user/user.module";
 import {CvController} from "./cv.controller";
 import {CvService} from "./cv.service";
 import { MulterModule } from '@nestjs/platform-express';
+import {SkillEntity} from "../skill/entities/skill.entity";
+import {SkillModule} from "../skill/skill.module";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([CvEntity]),
+        TypeOrmModule.forFeature([CvEntity, SkillEntity]),
         UserModule,
+        SkillModule,
         MulterModule.register({
             dest : './uploads',
         })

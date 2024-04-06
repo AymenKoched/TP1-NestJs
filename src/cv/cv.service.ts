@@ -8,6 +8,7 @@ import {SearchCriteriaDto} from "./dto/search-criteria.dto";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "../user/entities/user.entity";
 import {UserRoleEnum} from "../enums/user-role.enum";
+import {SkillEntity} from "../skill/entities/skill.entity";
 
 
 @Injectable()
@@ -15,8 +16,9 @@ export class CvService {
   constructor(
     @InjectRepository(CvEntity)
     private readonly cvRepo : Repository<CvEntity>,
+    @InjectRepository(SkillEntity)
+    private readonly skillRepo: Repository<SkillEntity>,
     private readonly userService: UserService,
-
   ) {}
 
   async findAll(user: Partial<UserEntity>):Promise<CvEntity[]> {
@@ -58,10 +60,19 @@ export class CvService {
     return queryBuilder;
   }
 
-  async create(newCv: CreateCvDto, user): Promise<CvEntity> {
+  async create(newCv: CreateCvDto, user, skillIds: string[]): Promise<CvEntity> {
     const cv = this.cvRepo.create(newCv);
     cv.user = user;
-    return await this.cvRepo.save(cv);  }
+    const skills = [];
+    if (Array.isArray(skillIds)) {
+      await Promise.all(skillIds.map(async (id) => {
+        const skill = await this.skillRepo.findOneBy({ id: id });
+        skills.push(skill);
+      }));
+    }
+    cv.cvSkills = skills;
+    return await this.cvRepo.save(cv);
+  }
 
   async updateById(id: string, updatedCv:UpdateCvDto, user: Partial<UserEntity>): Promise<CvEntity> {
     const oldCv = await this.findOneById(id, user);
