@@ -1,14 +1,14 @@
 import {Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CvEntity } from './entities/cv.entity';
-import { CreateCvDto } from './dto/create-cv.dto';
-import { UpdateCvDto } from './dto/update-cv.dto';
-import {SearchCriteriaDto} from "./dto/search-criteria.dto";
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {CvEntity} from './entities/cv.entity';
+import {CreateCvDto} from './dto/create-cv.dto';
+import {UpdateCvDto} from './dto/update-cv.dto';
 import {UserService} from "../user/user.service";
 import {UserEntity} from "../user/entities/user.entity";
 import {UserRoleEnum} from "../enums/user-role.enum";
 import {SkillEntity} from "../skill/entities/skill.entity";
+import {SearchCriteriaDto} from "./dto/search-criteria.dto";
 
 
 @Injectable()
@@ -54,7 +54,7 @@ export class CvService {
     const queryBuilder = this.cvRepo
       .createQueryBuilder('cv')
       .where('cv.name LIKE :query OR cv.firstname LIKE :query OR cv.job LIKE :query', { query: `%${query}%` })
-      .andWhere('cv.age = :age', { age })
+      .orWhere('cv.age = :age', { age })
       .getRawMany();
 
     return queryBuilder;

@@ -34,6 +34,12 @@ export class CvController {
     return { data, total };
   }
 
+  @Get('criteria')
+  async findByCriteria(
+    @Query() searchQuery: SearchCriteriaDto,
+  ) : Promise<CvEntity[]> {
+    return this.cvService.searchCriteria(searchQuery);
+  }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -42,13 +48,6 @@ export class CvController {
     @User() user: Partial<UserEntity>,
   ) : Promise<CvEntity> {
     return this.cvService.findOneById(id, user);
-  }
-
-  @Get('criteria')
-  async findByCriteria(
-    @Query() searchQuery: SearchCriteriaDto,
-  ) : Promise<CvEntity[]> {
-    return this.cvService.searchCriteria(searchQuery);
   }
 
   @Post()
