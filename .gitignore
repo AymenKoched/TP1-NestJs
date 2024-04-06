@@ -6,6 +6,9 @@
 # config
 /config/.env
 
+# uploads
+/uploads
+
 # Logs
 logs
 *.log
