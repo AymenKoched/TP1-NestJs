@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {ConflictException, HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
@@ -9,6 +9,10 @@ import {handle_error} from "../helpers/user.unique-username-email/user.unique-us
 import {LoginUserDto} from "./dto/login-user.dto";
 import {UserRoleEnum} from "../enums/user-role.enum";
 import {JwtService} from "@nestjs/jwt";
+import { UserSubscribeDto } from './dto/subscribe-user.dto';
+import {UpdateCvDto} from "../cv/dto/update-cv.dto";
+import {UpdateUserDto} from "./dto/update-user.dto";
+import {CvEntity} from "../cv/entities/cv.entity";
 
 
 @Injectable()
@@ -81,5 +85,43 @@ constructor(
 
   isOwnerOrAdmin(object, user) {
     return user.role === UserRoleEnum.ADMIN || (object.user && object.user.id === user.id);
+  }
+
+  async subscribe(userData:UserSubscribeDto) : Promise<Partial<UserEntity>>{
+    const {username ,password,email} = userData;
+    let user = this.userRepository.create(
+      {username,password,email});
+    try {
+      await this.userRepository.save(user);
+    }catch(err){
+      throw new ConflictException("data not found !!!");
+    }
+    return {
+      id : user.id,
+      username  : user.username,
+      email : user.email,
+      password : user.password
+    } ;
+  }
+
+  async findAll() {
+    return this.userRepository.find();
+  }
+
+  async findOne(id:string) {
+    return this.userRepository.findOneBy({id});
+  }
+
+  async update(id: string, updatedUser:UpdateUserDto) {
+    const oldCv = await this.findOne(id);
+
+    const newUser = await this.userRepository.update({id},updatedUser );
+
+    return newUser;
+  }
+
+  async remove(id: string) {
+    const userToDelete =await this.findOne(id);
+    return await this.userRepository.softRemove(userToDelete);
   }
 }

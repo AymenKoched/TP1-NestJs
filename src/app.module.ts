@@ -6,9 +6,9 @@ import {ConfigModule} from "@nestjs/config";
 import { SkillModule } from './skill/skill.module';
 import { CvModule } from './cv/cv.module';
 import { UserModule } from './user/user.module';
-
 import * as process from 'process';
 import { AuthMiddleware } from './Middlewares/auth.middleware';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [CvModule,UserModule,SkillModule,
@@ -29,6 +29,7 @@ import { AuthMiddleware } from './Middlewares/auth.middleware';
         trustServerCertificate: true,
       }
     }),
+    EventEmitterModule.forRoot(),
     CvModule,
     SkillModule,
     UserModule,
