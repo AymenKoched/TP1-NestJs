@@ -7,6 +7,7 @@ import {CvService} from "./cv.service";
 import { MulterModule } from '@nestjs/platform-express';
 import {SkillEntity} from "../skill/entities/skill.entity";
 import {SkillModule} from "../skill/skill.module";
+import { CvListener } from './cv.listener';
 
 @Module({
     imports: [
@@ -18,6 +19,6 @@ import {SkillModule} from "../skill/skill.module";
         })
     ],
     controllers: [CvController],
-    providers: [CvService]
+    providers: [CvService , CvListener]
 })
 export class CvModule {}

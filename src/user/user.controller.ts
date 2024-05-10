@@ -66,6 +66,7 @@ export class UserController {
       const updateStream = fromEvent(this.eventEmitter, CV_EVENTS.update).pipe(
         map((payload ) => new MessageEvent('cv-updated', { data: payload })),
       );
+      
       return merge(addStream, deleteStream, updateStream);
     }
     else{

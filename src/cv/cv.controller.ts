@@ -12,10 +12,14 @@ import { UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { CV_EVENTS } from './cv-events.config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('cv')
 export class CvController {
-  constructor(private readonly cvService: CvService){}
+  constructor(private readonly cvService: CvService ,
+    private eventEmitter: EventEmitter2
+  ){}
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -58,7 +62,9 @@ export class CvController {
     @Query('skillIds') skillIds: string,
   ) : Promise<CvEntity> {
     const skillIdsArray = skillIds.split(',');
-    return this.cvService.create(CreateCvDto, user, skillIdsArray);
+    const cv = await this.cvService.create(CreateCvDto, user, skillIdsArray);
+    this.eventEmitter.emit(CV_EVENTS.add, { cv , user});
+    return cv ; 
   }
 
   @Patch(':id')
@@ -68,7 +74,9 @@ export class CvController {
     @Body() updateCvDto : UpdateCvDto,
     @User() user: Partial<UserEntity>,
   )  {
-      return this.cvService.updateById(id,updateCvDto, user);
+      const cv = await this.cvService.updateById(id,updateCvDto, user);
+      this.eventEmitter.emit(CV_EVENTS.update, {cv,user});
+      return cv ;
   }
 
   @Delete(':id')
@@ -77,7 +85,9 @@ export class CvController {
     @Param('id') id: string,
     @User() user: Partial<UserEntity>,
   ):Promise<CvEntity> {
-    return this.cvService.softRemoveById(id, user);
+    const cv = this.cvService.softRemoveById(id, user); ;
+    this.eventEmitter.emit(CV_EVENTS.delete, {cv,user});
+    return cv ;
   }
 
   @Get('restore/:id')
